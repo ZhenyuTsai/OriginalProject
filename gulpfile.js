@@ -14,7 +14,7 @@ const htmlmin = require('gulp-htmlmin')
 const del = require('del')
 const webServer = require('gulp-webserver')
 const fileInclude = require('gulp-file-include')
-
+const zip = require('gulp-zip')
 // 创建一个打包css的任务
 const cssHandler = function(){
   return gulp
@@ -82,8 +82,8 @@ const webServerHandler = function(){
   return gulp
     .src('./dist')
     .pipe(webServer({
-      host: 'localhost', // 域名
-      port: '8080', // 端口号
+      // host: 'localhost', // 域名
+      port: '3000', // 端口号
       livereload: true, // 当文件修改时,是否自动刷新
       open: './pages/index.html' // 默认打开文件, 从dist往后书写
     }))
@@ -99,9 +99,18 @@ const watchHandler = function(){
   gulp.watch('./src/assets/**/*', assetsHandler)
 }
 
+// 创建打包命令
+const zipHandler = function () {
+  return gulp
+    .src('./dist/**/*')
+    .pipe(zip('dist.tar.gz'))
+    .pipe(gulp.dest('dist'))
+}
+
 module.exports.build = gulp.series(
   delHandler,
-  gulp.parallel(cssHandler,lessHandler,jsHandler,htmlHandler,assetsHandler)
+  gulp.parallel(cssHandler,lessHandler,jsHandler,htmlHandler,assetsHandler),
+  zipHandler
 )
 
 module.exports.default = gulp.series(
